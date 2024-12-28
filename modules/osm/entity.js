@@ -144,20 +144,20 @@ osmEntity.prototype = {
 
 
     mergeTags: function(tags) {
-        var merged = Object.assign({}, this.tags);   // shallow copy
+        var merged = Object.assign({}, this.tags);
         var changed = false;
-        for (var k in tags) {
-            var t1 = merged[k];
-            var t2 = tags[k];
+        for (var k2 in tags) {
+            var t1 = merged[k2];
+            var t2 = tags[k2];
             if (!t1) {
                 changed = true;
-                merged[k] = t2;
+                merged[k2] = t2;
+            } else if (!isNaN(t1) && !isNaN(t2)) {
+                changed = true;
+                merged[k2] = String(Number(t1) + Number(t2));
             } else if (t1 !== t2) {
                 changed = true;
-                merged[k] = utilUnicodeCharsTruncated(
-                    utilArrayUnion(t1.split(/;\s*/), t2.split(/;\s*/)).join(';'),
-                    255 // avoid exceeding character limit; see also context.maxCharsForTagValue()
-                );
+                merged[k2] = `${t1};${t2}`;
             }
         }
         return changed ? this.update({ tags: merged }) : this;

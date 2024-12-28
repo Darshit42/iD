@@ -191,8 +191,19 @@ export function actionJoin(ids) {
             return relation.isRestriction() ? 'restriction' : 'connectivity';
         }
 
-        if (conflicting) {
-            return 'conflicting_tags';
+        if (conflicting){
+            ids.forEach(function(id2) {
+                var way = graph.entity(id2);
+                for (var k2 in way.tags) {
+                    if (!tags[k2]) {
+                        tags[k2] = way.tags[k2];
+                    } else if (!isNaN(tags[k2]) && !isNaN(way.tags[k2])) {
+                        tags[k2] = String(Number(tags[k2])+Number(way.tags[k2]));
+                    } else if (tags[k2] !== way.tags[k2]) {
+                        tags[k2] = `${tags[k2]};${way.tags[k2]}`;
+                    }
+                }
+            });
         }
     };
 
